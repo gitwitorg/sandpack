@@ -12,9 +12,10 @@ import type { SandpackFileExplorerProp } from ".";
 export interface ModuleListProps extends SandpackFileExplorerProp {
   prefixedPath: string;
   files: SandpackBundlerFiles;
-  selectFile: (path: string) => void;
-  deleteFile: (path: string) => void;
-  renameFile: (path: string) => void;
+  selectFile?: (path: string) => void;
+  addFile?: (path: string) => void;
+  deleteFile?: (path: string) => void;
+  renameFile?: (path: string) => void;
   activeFile: NonNullable<SandpackOptions["activeFile"]>;
   depth?: number;
   visibleFiles: NonNullable<SandpackOptions["visibleFiles"]>;
@@ -24,6 +25,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
   depth = 0,
   activeFile,
   selectFile,
+  addFile,
   deleteFile,
   renameFile,
   prefixedPath,
@@ -45,6 +47,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
         <Directory
           key={dir}
           activeFile={activeFile}
+          addFile={addFile}
           autoHiddenFiles={autoHiddenFiles}
           deleteFile={deleteFile}
           depth={depth}

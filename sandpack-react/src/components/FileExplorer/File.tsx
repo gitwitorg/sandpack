@@ -33,6 +33,7 @@ const explorerClassName = css({
 export interface Props {
   path: string;
   selectFile?: (path: string) => void;
+  addFile?: (path: string) => void;
   deleteFile?: (path: string) => void;
   renameFile?: (path: string) => void;
   active?: boolean;
@@ -43,6 +44,7 @@ export interface Props {
 
 export const File: React.FC<Props> = ({
   selectFile,
+  addFile,
   deleteFile,
   renameFile,
   path,
@@ -104,6 +106,7 @@ export const File: React.FC<Props> = ({
   const items = [];
   if (renameFile) items.push({ label: "Rename", action: () => renameFile?.(path) });
   if (deleteFile) items.push({ label: "Delete", action: () => deleteFile?.(path) });
+  if (addFile) items.push({ label: "New file", action: () => addFile?.(path) });
 
   return (
     <div

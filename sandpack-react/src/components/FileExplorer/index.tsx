@@ -84,6 +84,14 @@ export const SandpackFileExplorer = ({
     }
   }
 
+  const userAddFile = (path: string) => {
+    const newFileName = window.prompt("Enter new file name");
+
+    if (newFileName) {
+      updateFile(path.replace(/[/]*[^/]*$/, "") + "/" + newFileName, "", false);
+    }
+  }
+
   const orderedFiles = Object.keys(files)
     .sort()
     .reduce<SandpackBundlerFiles>((obj, key) => {
@@ -102,6 +110,7 @@ export const SandpackFileExplorer = ({
       >
         <ModuleList
           activeFile={activeFile}
+          addFile={userAddFile}
           autoHiddenFiles={autoHiddenFiles}
           deleteFile={userDeleteFile}
           files={orderedFiles}
