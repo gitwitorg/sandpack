@@ -3,7 +3,12 @@ import * as React from "react";
 import { css } from "../../styles";
 import { buttonClassName } from "../../styles/shared";
 import { useClassNames } from "../../utils/classNames";
-import { DirectoryIconOpen, DirectoryIconClosed, FileIcon } from "../icons";
+import {
+  DirectoryIconOpen,
+  DirectoryIconClosed,
+  FileIcon,
+  ThreeDotsIcon,
+} from "../icons";
 
 const explorerClassName = css({
   borderRadius: "0",
@@ -47,6 +52,7 @@ export const File: React.FC<Props> = ({
 
     onClick?.(event);
   };
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const fileName = path.split("/").filter(Boolean).pop();
 
@@ -57,20 +63,37 @@ export const File: React.FC<Props> = ({
   };
 
   return (
-    <button
-      className={classNames("button", [
-        classNames("explorer"),
-        buttonClassName,
-        explorerClassName,
-      ])}
-      data-active={active}
-      onClick={onClickButton}
-      style={{ paddingLeft: 18 * depth + "px" }}
-      title={fileName}
-      type="button"
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: "flex",
+      }}
     >
-      {getIcon()}
-      <span>{fileName}</span>
-    </button>
+      <button
+        className={classNames("button", [
+          classNames("explorer"),
+          buttonClassName,
+          explorerClassName,
+        ])}
+        data-active={active}
+        onClick={onClickButton}
+        style={{ paddingLeft: 18 * depth + "px", flex: 1 }}
+        title={fileName}
+        type="button"
+      >
+        {getIcon()}
+        <span>{fileName}</span>
+      </button>
+      <button
+        className={classNames("button", [
+          classNames("explorer"),
+          buttonClassName,
+        ])}
+        style={isHovered ? { display: "block" } : { display: "none" }}
+      >
+        <ThreeDotsIcon />
+      </button>
+    </div>
   );
 };

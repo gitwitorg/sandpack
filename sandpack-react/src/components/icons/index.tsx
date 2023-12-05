@@ -162,3 +162,12 @@ export const ConsoleIcon = (): React.ReactElement => (
     <path d="M10 11.5C9.72386 11.5 9.5 11.7239 9.5 12C9.5 12.2761 9.72386 12.5 10 12.5V11.5ZM14.6667 12.5C14.9428 12.5 15.1667 12.2761 15.1667 12C15.1667 11.7239 14.9428 11.5 14.6667 11.5V12.5ZM10 12.5H14.6667V11.5H10V12.5Z" />
   </SVG>
 );
+
+export const ThreeDotsIcon = (): React.ReactElement => (
+  <SVG>
+    <title>More options</title>
+    <circle cx="8" cy="4" fill="#666" r="1" />
+    <circle cx="8" cy="8" fill="#666" r="1" />
+    <circle cx="8" cy="12" fill="#666" r="1" />
+  </SVG>
+);
