@@ -66,6 +66,24 @@ export const SandpackFileExplorer = ({
     [status]
   );
 
+  const userRenameFile = (path: string) => {
+    const newFileName = window.prompt("Enter new file name");
+
+    if (newFileName) {
+      const fileContents = files[path].code;
+      deleteFile(path, false);
+      updateFile(path.replace(/[^/]+$/, newFileName), fileContents, false);
+    }
+  }
+
+  const userDeleteFile = (path: string) => {
+    const shouldDelete = window.confirm("Are you sure you want to delete this file?");
+
+    if (shouldDelete) {
+      deleteFile(path, false);
+    }
+  }
+
   const orderedFiles = Object.keys(files)
     .sort()
     .reduce<SandpackBundlerFiles>((obj, key) => {
@@ -76,6 +94,7 @@ export const SandpackFileExplorer = ({
   return (
     <div
       className={classNames("file-explorer", [stackClassName, className])}
+      style={{ overflow: "visible" }}
       {...props}
     >
       <div
@@ -84,9 +103,11 @@ export const SandpackFileExplorer = ({
         <ModuleList
           activeFile={activeFile}
           autoHiddenFiles={autoHiddenFiles}
+          deleteFile={userDeleteFile}
           files={orderedFiles}
           initialCollapsedFolder={initialCollapsedFolder}
           prefixedPath="/"
+          renameFile={userRenameFile}
           selectFile={openFile}
           visibleFiles={visibleFilesFromProps}
         />

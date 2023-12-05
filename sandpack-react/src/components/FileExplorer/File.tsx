@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { css } from "../../styles";
 import { buttonClassName } from "../../styles/shared";
@@ -9,6 +10,8 @@ import {
   FileIcon,
   ThreeDotsIcon,
 } from "../icons";
+
+import { ContextMenu } from "./ContextMenu";
 
 const explorerClassName = css({
   borderRadius: "0",
@@ -30,6 +33,8 @@ const explorerClassName = css({
 export interface Props {
   path: string;
   selectFile?: (path: string) => void;
+  deleteFile?: (path: string) => void;
+  renameFile?: (path: string) => void;
   active?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   depth: number;
@@ -38,6 +43,8 @@ export interface Props {
 
 export const File: React.FC<Props> = ({
   selectFile,
+  deleteFile,
+  renameFile,
   path,
   active,
   onClick,
@@ -53,6 +60,8 @@ export const File: React.FC<Props> = ({
     onClick?.(event);
   };
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isContextMenuVisible, setIsContextMenuVisible] = React.useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   const fileName = path.split("/").filter(Boolean).pop();
 
@@ -62,8 +71,43 @@ export const File: React.FC<Props> = ({
     return isDirOpen ? <DirectoryIconOpen /> : <DirectoryIconClosed />;
   };
 
+  // Toggle the context menu
+  const toggleContextMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setMenuPosition({ top: e.clientY - 10, left: e.clientX - 10 });
+    setIsContextMenuVisible(!isContextMenuVisible);
+  };
+
+  // Close the context menu when the user clicks outside this component
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        isContextMenuVisible &&
+        !containerRef.current?.contains(e.target as Node)
+      ) {
+        setIsContextMenuVisible(false);
+      }
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    window.addEventListener("contextmenu", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+      window.removeEventListener("contextmenu", handleClickOutside);
+    };
+  }, [isContextMenuVisible]);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Add the context menu items when available
+  const items = [];
+  if (renameFile) items.push({ label: "Rename", action: () => renameFile?.(path) });
+  if (deleteFile) items.push({ label: "Delete", action: () => deleteFile?.(path) });
+
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -78,6 +122,10 @@ export const File: React.FC<Props> = ({
         ])}
         data-active={active}
         onClick={onClickButton}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          toggleContextMenu(e);
+        }}
         style={{ paddingLeft: 18 * depth + "px", flex: 1 }}
         title={fileName}
         type="button"
@@ -85,15 +133,19 @@ export const File: React.FC<Props> = ({
         {getIcon()}
         <span>{fileName}</span>
       </button>
-      <button
+      {items.length ? (<button
         className={classNames("button", [
           classNames("explorer"),
           buttonClassName,
         ])}
+        onClick={toggleContextMenu}
         style={isHovered ? { display: "block" } : { display: "none" }}
       >
         <ThreeDotsIcon />
-      </button>
+      </button>) : null}
+      {isContextMenuVisible && (
+        <ContextMenu items={items} menuPosition={menuPosition} />
+      )}
     </div>
   );
 };
