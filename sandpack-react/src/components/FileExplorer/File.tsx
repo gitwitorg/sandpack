@@ -76,7 +76,16 @@ export const File: React.FC<Props> = ({
   // Toggle the context menu
   const toggleContextMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setMenuPosition({ top: e.clientY - 10, left: e.clientX - 10 });
+    const parent = containerRef.current;
+    if (!parent) return;
+    // This function finds the file explorer container.
+    const findParentWithClassName = (element: HTMLElement): HTMLElement | null => {
+      while ((element = element.parentElement as HTMLElement) && !element.className);
+      return element || null;
+    };
+    const rect = findParentWithClassName(parent)?.getBoundingClientRect();
+    if (!rect) return;
+    setMenuPosition({ top: e.clientY - rect.top, left: e.clientX - rect.left });
     setIsContextMenuVisible(!isContextMenuVisible);
   };
 
